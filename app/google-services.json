@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "26306001602",
+    "firebase_url": "https://masterart-4d543.firebaseio.com",
+    "project_id": "masterart-4d543",
+    "storage_bucket": "masterart-4d543.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:26306001602:android:69c3e3164659d4009a995b",
+        "android_client_info": {
+          "package_name": "com.example.masterart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "26306001602-p3b96sb8v8aa2q89jdm56d7fr4f62i4e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.masterart",
+            "certificate_hash": "9cd42967a528c82a386bded3c27eb2255d128561"
+          }
+        },
+        {
+          "client_id": "26306001602-2c708cod4l5vtnhg9f13dvs48hglsggg.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCVayKUV1mOEW28MRNPI7uEC7RPZypPS0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "26306001602-2c708cod4l5vtnhg9f13dvs48hglsggg.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
