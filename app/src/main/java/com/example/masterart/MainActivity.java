@@ -7,6 +7,8 @@ import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -16,6 +18,8 @@ import com.example.masterart.Fragment.ProfileFragment;
 import com.example.masterart.Fragment.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,11 +40,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListner =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
                 @Override
                 public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
 
                     switch (menuItem.getItemId()){
                         case R.id.nav_home:

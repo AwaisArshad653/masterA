@@ -26,7 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 public class LoginActivity extends AppCompatActivity {
 
     EditText email,password;
-    Button login;
+    Button login_btn;
     TextView txt_signup;
 
     FirebaseAuth auth;
@@ -42,53 +42,55 @@ public class LoginActivity extends AppCompatActivity {
         txt_signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(LoginActivity.this,MainActivity.class));
+                startActivity(new Intent(LoginActivity.this,RegisterActivity.class));
             }
         });
 
-        login.setOnClickListener(new View.OnClickListener() {
+        login_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
-                pd.setMessage("Please Wait...!");
-                pd.show();
+                try {
+                    final ProgressDialog pd = new ProgressDialog(LoginActivity.this);
+                    pd.setMessage("Please Wait...!");
+                    pd.show();
 
-                String str_email = email.getText().toString();
-                String str_password = password.getText().toString();
+                    String str_email = email.getText().toString();
+                    String str_password = password.getText().toString();
 
-                if (TextUtils.isEmpty(str_email) || TextUtils.isEmpty(str_password))
-                {
-                    Toast.makeText(LoginActivity.this, "All Fields are required", Toast.LENGTH_SHORT).show();
-                }else {
-                    auth.signInWithEmailAndPassword(str_email,str_password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task<AuthResult> task) {
-                            if(task.isSuccessful())
-                            {
-                                DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").
-                                        child(auth.getCurrentUser().getUid());
+                    if (TextUtils.isEmpty(str_email) || TextUtils.isEmpty(str_password)) {
+                        Toast.makeText(LoginActivity.this, "All Fields are required", Toast.LENGTH_SHORT).show();
+                    } else {
+                        auth.signInWithEmailAndPassword(str_email, str_password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                if (task.isSuccessful()) {
+                                    DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").
+                                            child(auth.getCurrentUser().getUid());
 
-                                reference.addValueEventListener(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        pd.dismiss();
-                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                        startActivity(intent);
-                                        finish();
-                                    }
+                                    reference.addValueEventListener(new ValueEventListener() {
+                                        @Override
+                                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                            pd.dismiss();
+                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
 
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                                        pd.dismiss();
-                                    }
-                                });
-                            }else{
-                                pd.dismiss();
-                                Toast.makeText(LoginActivity.this, "Authentication Failed!", Toast.LENGTH_SHORT).show();
+                                        @Override
+                                        public void onCancelled(@NonNull DatabaseError databaseError) {
+                                            pd.dismiss();
+                                        }
+                                    });
+                                } else {
+                                    pd.dismiss();
+                                    Toast.makeText(LoginActivity.this, "Authentication Failed!", Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+                }catch (Exception e)
+                {
+                    Toast.makeText(LoginActivity.this, "Error: "+ e, Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -96,9 +98,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     void Initialization(){
-        email = findViewById(R.id.email);
+        email = findViewById(R.id.Email);
         password = findViewById(R.id.password);
-        login = findViewById(R.id.login_btn);
+        login_btn = findViewById(R.id.login_btn);
         txt_signup = findViewById(R.id.txt_sign_up);
 
         auth = FirebaseAuth.getInstance();
