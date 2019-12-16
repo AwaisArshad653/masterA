@@ -26,12 +26,15 @@ public class ProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_profile, container, false);
             final TextView sign_out = (TextView) view.findViewById(R.id.sign_out);
+
+
             sign_out.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     FirebaseAuth.getInstance().signOut();
-                    Intent intent = new Intent(getActivity(), LoginActivity.class);
+                    Intent intent = new Intent(getContext(), LoginActivity.class);
                     startActivity(intent);
+                    getActivity().finish();
                 }
             });
         return view;

@@ -1,40 +1,40 @@
 package com.example.masterart.Model;
 
 public class Post {
-    private String postid;
-    private String postimage;
-    private String publisher;
+    private String Video_id;
+    private String Video;
+    private String Video_uploader;
 
-    public Post(String postid, String postimage, String publisher) {
-        this.postid = postid;
-        this.postimage = postimage;
-        this.publisher = publisher;
+    public Post(String video_id, String video, String video_uploader) {
+        Video_id = video_id;
+        Video = video;
+        Video_uploader = video_uploader;
     }
 
     public Post() {
     }
 
-    public String getPostid() {
-        return postid;
+    public String getVideo_id() {
+        return Video_id;
     }
 
-    public void setPostid(String postid) {
-        this.postid = postid;
+    public void setVideo_id(String video_id) {
+        Video_id = video_id;
     }
 
-    public String getPostimage() {
-        return postimage;
+    public String getVideo() {
+        return Video;
     }
 
-    public void setPostimage(String postimage) {
-        this.postimage = postimage;
+    public void setVideo(String video) {
+        Video = video;
     }
 
-    public String getPublisher() {
-        return publisher;
+    public String getVideo_uploader() {
+        return Video_uploader;
     }
 
-    public void setPublisher(String publisher) {
-        this.publisher = publisher;
+    public void setVideo_uploader(String video_uploader) {
+        Video_uploader = video_uploader;
     }
 }

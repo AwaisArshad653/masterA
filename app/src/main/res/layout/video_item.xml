@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <VideoView
-        android:id="@+id/videoView"
+        android:id="@+id/video_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <LinearLayout
@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_centerVertical="true"
-        android:paddingStart="300dp">
+        android:paddingStart="300dp"
+        android:id="@+id/linear">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical">
         <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/imageButton"
+            android:id="@+id/image_profile"
             android:layout_width="40dp"
             android:layout_height="40dp"
             android:src="@drawable/ic_profile"
@@ -27,6 +28,7 @@
             android:layout_centerInParent="true"
             android:layout_marginRight="50dp"/>
         <TextView
+            android:id="@+id/publisher"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Username" />
@@ -38,15 +40,17 @@
         <ImageButton
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:id="@+id/like"
             android:src="@drawable/ic_like"
             android:layout_alignParentEnd="true"
             android:layout_centerInParent="true"
             android:layout_marginRight="50dp"
             />
         <TextView
+            android:id="@+id/likes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Favourite" />
+            />
     </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
