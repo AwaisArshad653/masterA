@@ -7,10 +7,7 @@ import androidx.fragment.app.Fragment;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.example.masterart.Fragment.HomeFragment;
 import com.example.masterart.Fragment.NotificationFragment;
@@ -18,8 +15,6 @@ import com.example.masterart.Fragment.ProfileFragment;
 import com.example.masterart.Fragment.SearchFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.zip.Inflater;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -36,8 +31,17 @@ public class MainActivity extends AppCompatActivity {
 
         bottomNavigationView.setOnNavigationItemSelectedListener(navigationItemSelectedListner);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
-
+        Bundle intent = getIntent().getExtras();
+        if (intent!=null)
+        {
+            String publisher = intent.getString("publisherid");
+            SharedPreferences.Editor editor = getSharedPreferences("PREFS",MODE_PRIVATE).edit();
+            editor.putString("profileid",publisher);
+            editor.apply();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ProfileFragment()).commit();
+        }else {
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new HomeFragment()).commit();
+        }
     }
 
 

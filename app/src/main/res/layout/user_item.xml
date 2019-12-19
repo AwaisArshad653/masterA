@@ -26,7 +26,7 @@
             android:text="Username"
             android:maxLines="1"
             android:textStyle="bold"
-            android:textColor="@color/colorPrimaryDark"/>
+            android:textColor="@color/colorBlack"/>
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -40,7 +40,7 @@
         android:layout_height="30dp"
         android:background="@drawable/button_background"
         android:id="@+id/btn_follow"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/colorAccent"
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:visibility="gone"/>

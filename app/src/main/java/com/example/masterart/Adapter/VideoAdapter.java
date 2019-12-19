@@ -1,11 +1,15 @@
 package com.example.masterart.Adapter;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -15,9 +19,13 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
+import com.example.masterart.CommentsActivity;
 import com.example.masterart.Model.Post;
 import com.example.masterart.Model.User;
 import com.example.masterart.R;
@@ -31,51 +39,72 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.List;
 
-public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
+
+
+
+public class VideoAdapter extends PagerAdapter{
+
     public Context mContext;
+    private LayoutInflater layoutInflater;
     public List<Post> mVideo;
     public MediaController mediaControls;
+    public ImageView image_profile,like,comment;
+    public TextView likes,publisher,comments;
+    public VideoView videoView;
 
     private FirebaseUser firebaseUser;
 
-    public VideoAdapter(Context mContext, List<Post> mPost) {
-        this.mContext = mContext;
+    public VideoAdapter(Context context, List<Post> mPost) {
+        this.mContext = context;
         this.mVideo = mPost;
     }
 
-    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.video_item ,parent,false);
-        mediaControls = new MediaController(mContext);
-        return new VideoAdapter.ViewHolder(view);
+    public int getCount() {
+        return mVideo.size();
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
-
-
+    public boolean isViewFromObject(@NonNull View view, @NonNull Object object) {
+        return view == object;
+    }
+    @Override
+    public Object instantiateItem(@NonNull ViewGroup container, final int position)
+    {
+        layoutInflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.video_item ,null);
+        mediaControls = new MediaController(mContext);
+        MediaStore mediaStore;
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
         final Post post = mVideo.get(position);
-        holder.videoView.setMediaController(mediaControls);
-        holder.videoView.setVideoURI(Uri.parse(post.getVideo()));
-        holder.videoView.requestFocus();
-        holder.videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+        image_profile = view.findViewById(R.id.image_profile);
+        videoView = view.findViewById(R.id.video_id);
+        like = view.findViewById(R.id.like);
+        likes = view.findViewById(R.id.likes);
+        publisher = view.findViewById(R.id.publisher);
+        comment = view.findViewById(R.id.comment);
+        comments = view.findViewById(R.id.comments);
+        VideoView videoView = view.findViewById(R.id.video_id);
+        videoView.setMediaController(mediaControls);
+        videoView.setVideoURI(Uri.parse(post.getVideo()));
+        videoView.requestFocus();
+        videoView.start();
+
+        videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
-            public void onPrepared(MediaPlayer mp) { holder.videoView.start();
+            public void onPrepared(MediaPlayer mp) {
             }
         });
 
-        publisherInfo(holder.image_profile,holder.publisher,post.getVideo_uploader());
+        publisherInfo(image_profile,publisher,post.getVideo_uploader());
+        isLiked(post.getVideo_id(),like);
+        nrLikes(likes,post.getVideo_id());
+        getComments(post.getVideo_id(),comments);
 
-        isLiked(post.getVideo_id(),holder.like);
-
-        nrLikes(holder.likes,post.getVideo_id());
-
-        holder.like.setOnClickListener(new View.OnClickListener() {
+        like.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (holder.like.getTag().equals("like"))
+                if (like.getTag().equals("like"))
                 {
                     FirebaseDatabase.getInstance().getReference().child("Likes").child(post.getVideo_id()).child(firebaseUser.getUid()).setValue(true);
                 }
@@ -85,29 +114,57 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
                 }
             }
         });
+
+        comment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, CommentsActivity.class);
+                intent.putExtra("Video_id",post.getVideo_id());
+                intent.putExtra("Video_uploader",post.getVideo_id());
+                mContext.startActivity(intent);
+            }
+        });
+        comments.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, CommentsActivity.class);
+                intent.putExtra("Video_id",post.getVideo_id());
+                intent.putExtra("Video_uploader",post.getVideo_id());
+                mContext.startActivity(intent);
+            }
+        });
+
+        ViewPager viewPager = (ViewPager)container;
+        viewPager.addView(view);
+        return view;
     }
+
 
     @Override
-    public int getItemCount() {
-        return mVideo.size();
+    public void destroyItem(@NonNull ViewGroup container,int position,@NonNull Object object)
+    {
+        ViewPager viewPager = (ViewPager)container;
+        View view = (View)object;
+        viewPager.removeView(view);
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    private void getComments(String videoid, final TextView comments)
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Comments").child(videoid);
 
-        public ImageView image_profile,like;
-        public TextView likes,publisher;
-        public VideoView videoView;
+        reference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                comments.setText(""+dataSnapshot.getChildrenCount());
+            }
 
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            image_profile = itemView.findViewById(R.id.image_profile);
-            videoView = itemView.findViewById(R.id.video_id);
-            like = itemView.findViewById(R.id.like);
-            likes = itemView.findViewById(R.id.likes);
-            publisher = itemView.findViewById(R.id.publisher);
-        }
+            }
+        });
     }
+
 
     private void isLiked(String videoid, final ImageView imageView)
     {
@@ -143,7 +200,7 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                likes.setText(dataSnapshot.getChildrenCount() + "likes");
+                likes.setText(dataSnapshot.getChildrenCount()+"");
             }
 
             @Override
@@ -155,7 +212,6 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
 
     private void publisherInfo(final ImageView image_profile, final TextView publisher, String userid)
     {
-        try {
             DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(userid);
 
             reference.addValueEventListener(new ValueEventListener() {
@@ -171,9 +227,5 @@ public class VideoAdapter extends RecyclerView.Adapter<VideoAdapter.ViewHolder>{
 
                 }
             });
-        }catch (Exception e)
-        {
-            Toast.makeText(mContext, "Error " + e, Toast.LENGTH_SHORT).show();
-        }
     }
 }

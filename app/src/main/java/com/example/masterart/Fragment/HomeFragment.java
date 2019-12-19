@@ -1,21 +1,25 @@
 package com.example.masterart.Fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.masterart.Adapter.VideoAdapter;
 import com.example.masterart.Model.Post;
 import com.example.masterart.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -29,11 +33,13 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
 
-    private RecyclerView recyclerView;
-    private VideoAdapter videoAdapter;
+    private ViewPager viewPager;
     private List<Post> videoLists;
+    private Context context;
+    VideoAdapter videoAdapter = new VideoAdapter(context, videoLists);
 
     private List<String> followingList;
+    public String user;
 
 
 
@@ -43,27 +49,49 @@ public class HomeFragment extends Fragment {
 
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-        recyclerView = view.findViewById(R.id.recycler_view);
-        recyclerView.setHasFixedSize(true);
+        viewPager = view.findViewById(R.id.myViewPager);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         linearLayoutManager.setReverseLayout(true);
         linearLayoutManager.setStackFromEnd(true);
-        recyclerView.setLayoutManager(linearLayoutManager);
+
         videoLists = new ArrayList<>();
         videoAdapter = new VideoAdapter(getContext(),videoLists);
-        recyclerView.setAdapter(videoAdapter);
+        viewPager.setAdapter(videoAdapter);
 
-        checkFollowing();
+
+        checkUnFollowing();
 
         return view;
     }
-
     private void checkFollowing()
     {
-        try {
+            followingList = new ArrayList<>();
+            final DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following");
+
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    followingList.clear();
+                    for(DataSnapshot snapshot : dataSnapshot.getChildren())
+                    {
+                        followingList.add(snapshot.getKey());
+                    }
+                    readPosts();
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+    }
+
+    private void checkUnFollowing()
+    {
         followingList = new ArrayList<>();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Follow").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("following");
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users");
+
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -71,9 +99,9 @@ public class HomeFragment extends Fragment {
                 followingList.clear();
                 for(DataSnapshot snapshot : dataSnapshot.getChildren())
                 {
-                    followingList.add(snapshot.getKey());
+                        followingList.add(snapshot.getKey());
                 }
-                readPosts();
+                    readPosts();
             }
 
             @Override
@@ -81,15 +109,10 @@ public class HomeFragment extends Fragment {
 
             }
         });
-    }catch (Exception e)
-        {
-            Toast.makeText(getContext(), "Error" + e, Toast.LENGTH_SHORT).show();
-        }
     }
 
     private void readPosts()
     {
-        try {
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Videos");
 
         reference.addValueEventListener(new ValueEventListener() {
@@ -116,10 +139,6 @@ public class HomeFragment extends Fragment {
 
             }
         });
-    }catch (Exception e)
-    {
-        Toast.makeText(getContext(), "Error" + e, Toast.LENGTH_SHORT).show();
-    }
     }
 
 
