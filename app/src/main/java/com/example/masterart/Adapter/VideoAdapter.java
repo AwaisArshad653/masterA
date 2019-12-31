@@ -1,15 +1,12 @@
 package com.example.masterart.Adapter;
 
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -19,13 +16,14 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
 import com.bumptech.glide.Glide;
 import com.example.masterart.CommentsActivity;
+import com.example.masterart.FollowersActivity;
+import com.example.masterart.Fragment.ProfileFragment;
 import com.example.masterart.Model.Post;
 import com.example.masterart.Model.User;
 import com.example.masterart.R;
@@ -37,6 +35,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -90,6 +89,11 @@ public class VideoAdapter extends PagerAdapter{
         videoView.requestFocus();
         videoView.start();
 
+        if (!videoView.isPlaying())
+        {
+            Toast.makeText(mContext, "Please wait", Toast.LENGTH_SHORT).show();
+        }
+
         videoView.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
@@ -100,6 +104,30 @@ public class VideoAdapter extends PagerAdapter{
         isLiked(post.getVideo_id(),like);
         nrLikes(likes,post.getVideo_id());
         getComments(post.getVideo_id(),comments);
+        like.setTag("like");
+
+        image_profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS",Context.MODE_PRIVATE).edit();
+                editor.putString("profileid",post.getVideo_uploader());
+                editor.apply();
+
+                ((FragmentActivity)mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ProfileFragment()).commit();
+            }
+        });
+
+        publisher.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = mContext.getSharedPreferences("PREFS",Context.MODE_PRIVATE).edit();
+                editor.putString("profileid",post.getVideo_uploader());
+                editor.apply();
+
+                ((FragmentActivity)mContext).getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container,new ProfileFragment()).commit();
+            }
+        });
+
 
         like.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -107,6 +135,7 @@ public class VideoAdapter extends PagerAdapter{
                 if (like.getTag().equals("like"))
                 {
                     FirebaseDatabase.getInstance().getReference().child("Likes").child(post.getVideo_id()).child(firebaseUser.getUid()).setValue(true);
+                    addNotifications(post.getVideo_uploader(),post.getVideo_id());
                 }
                 else
                 {
@@ -131,6 +160,16 @@ public class VideoAdapter extends PagerAdapter{
                 intent.putExtra("Video_id",post.getVideo_id());
                 intent.putExtra("Video_uploader",post.getVideo_id());
                 mContext.startActivity(intent);
+            }
+        });
+
+        likes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext, FollowersActivity.class);
+                intent.putExtra("id",post.getVideo_id());
+                intent.putExtra("title","likes");
+                mContext. startActivity(intent);
             }
         });
 
@@ -166,7 +205,7 @@ public class VideoAdapter extends PagerAdapter{
     }
 
 
-    private void isLiked(String videoid, final ImageView imageView)
+    private void isLiked(String videoid, final ImageView likeView)
     {
         final FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -177,12 +216,12 @@ public class VideoAdapter extends PagerAdapter{
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.child(firebaseUser.getUid()).exists())
                 {
-                    imageView.setImageResource(R.drawable.ic_liked);
-                    imageView.setTag("liked");
+                    likeView.setImageResource(R.drawable.ic_liked);
+                    likeView.setTag("liked");
                 }
                 else {
-                    imageView.setImageResource(R.drawable.ic_like);
-                    imageView.setTag("like");
+                    likeView.setImageResource(R.drawable.ic_like);
+                    likeView.setTag("like");
                 }
             }
 
@@ -192,6 +231,19 @@ public class VideoAdapter extends PagerAdapter{
             }
         });
     }
+    private void addNotifications(String userid,String postid)
+    {
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Notifications").child(userid);
+
+        HashMap<String,Object> hashMap = new HashMap<>();
+        hashMap.put("userid",firebaseUser.getUid());
+        hashMap.put("text","liked your post");
+        hashMap.put("Video_id",postid);
+        hashMap.put("ispost",true);
+
+
+        reference.push().setValue(hashMap);
+    }
 
     private void nrLikes(final TextView likes, String videoid)
     {
@@ -200,7 +252,7 @@ public class VideoAdapter extends PagerAdapter{
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                likes.setText(dataSnapshot.getChildrenCount()+"");
+                likes.setText("Likes "+dataSnapshot.getChildrenCount());
             }
 
             @Override

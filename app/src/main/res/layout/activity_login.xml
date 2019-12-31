@@ -4,17 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorBackground"
+    android:background="#FDFDFD"
     android:orientation="vertical"
     tools:context=".LoginActivity">
 
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="100dp"
+        android:layout_width="180dp"
         android:layout_height="200dp"
-        android:layout_marginLeft="150dp"
+        android:layout_marginLeft="100dp"
         android:layout_marginTop="50dp"
-        android:src="@drawable/logo" />
+        android:src="@drawable/logo"
+        />
 
     <EditText
         android:id="@+id/Email"
@@ -60,7 +61,7 @@
         android:layout_marginTop="10dp"
         android:layout_centerInParent="true"
         android:layout_below="@+id/login_btn"
-        android:textColor="@color/colorAccent"
+        android:textColor="@color/colorPrimaryDark"
         android:text="Don't have a account? Sign up." />
 
 </RelativeLayout>

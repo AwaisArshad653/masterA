@@ -29,13 +29,12 @@
                     android:id="@+id/username"
                     android:textColor="@color/colorPrimaryDark"/>
 
-                <TextView
-                    android:id="@+id/sign_out"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ImageView
+                    android:id="@+id/options"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
                     android:layout_alignParentEnd="true"
                     android:layout_marginEnd="10dp"
-                    android:text="Sign Out"
                     android:src="@drawable/ic_options" />
             </RelativeLayout>
 
@@ -141,13 +140,13 @@
                         </LinearLayout>
 
                         <Button
+                            android:id="@+id/edit_profile"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
-                            android:id="@+id/edit_profile"
-                            android:background="@drawable/button_black"/>
+                            android:background="@drawable/button_black" />
 
-                        </LinearLayout>
+                    </LinearLayout>
 
                     </LinearLayout>
 
@@ -184,35 +183,21 @@
                 android:id="@+id/last_bar"
                 android:background="@drawable/button_black"
                 android:orientation="horizontal">
-                <ImageButton
-                    android:layout_width="1dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:id="@+id/my_videos"
-                    android:src="@drawable/ic_grid"
-                    style="?android:attr/buttonBarButtonStyle"/>
 
                 <ImageButton
+                    android:id="@+id/my_videos"
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_width="1dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:id="@+id/saved_videos"
-                    android:src="@drawable/ic_save"
-                    style="?android:attr/buttonBarButtonStyle"/>
+                    android:src="@drawable/ic_grid" />
+
             </LinearLayout>
 
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view1"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/recycler_view"
-                ></androidx.recyclerview.widget.RecyclerView>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/recycler_view_save"
-                android:visibility="gone"
-                ></androidx.recyclerview.widget.RecyclerView>
+                android:layout_height="353dp"></androidx.recyclerview.widget.RecyclerView>
 
                 </LinearLayout>
 
